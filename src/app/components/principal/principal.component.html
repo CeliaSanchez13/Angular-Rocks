@@ -1,0 +1,191 @@
+
+  <h1>Bandas de música - Angular Rocks</h1>
+  <h5>Celia Sánchez Mariblanca</h5>
+  <div class="col mt-5">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Añadir una nueva banda
+    </button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Añadir nueva banda</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="anadirGrupo()"[formGroup]="altaGrupo">
+              <div class="row mb-3">
+                <label>
+                  <span>Nombre</span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Nombre de la banda.."
+                      formControlName="nombre">
+                </label>
+              </div>
+              <div class="row">
+                <label>
+                  <span>Descripción</span>
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      placeholder="Descripcion..."
+                      formControlName="descripcion"></textarea>
+                </label> 
+              </div> 
+              <div class="row">
+                <label>
+                  <span>Frame canción</span>
+                  <textarea
+                    type="text"
+                    class="form-control"
+                    placeholder="Frame..."
+                    formControlName="frame"></textarea>
+                </label>
+              </div>          
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" type="button" (click)="anadirGrupo()" data-bs-dismiss="modal" class="btn btn-primary">Añadir</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!--Fin modal NUEVA-->
+  </div>
+  <div class="row mt-5"> <!-- BUSCADOR -->
+    <div class="col mb-5">
+      <input [(ngModel)]="termino" (keyup)="buscarGrupo(termino)" class="form-control w-75" type="text" placeholder="Buscar banda..." style="font-family:Arial, FontAwesome;">
+    </div>
+   <div class="row" *ngIf="encontrado == false"> <!-- LISTADO COMPLETO -->
+            <div class="col" *ngFor="let grupo of grupos"class="card" style="width: 18rem;  margin-right: 5%; margin-bottom: 5%;">
+              <div class="card-body tarjeta">
+                  <h5 class="card-title">{{grupo.nombre}}</h5>
+                  <p class="card-text">{{grupo.descripcion}}</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-success mx-2" [routerLink]="['/info',grupo.nombre]">Ver</button>
+                  <button class="btn btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#editarModal"(click)="editar(grupo)">Editar</button>
+                  <button (click)="borrar(grupo)" class="btn btn-danger mr-2">Eliminar</button>
+              </div>
+              <!-- MODAL EDITAR -->
+              <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Editar banda</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form (ngSubmit)="modificarGrupo()"[formGroup]="editarGrupo">
+                        <div class="row mb-3">
+                          <label>
+                            <span>Nombre</span>
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Nombre de la banda.."
+                                formControlName="nombre">
+                          </label>
+                        </div>
+                        <div class="row">
+                          <label>
+                            <span>Descripción</span>
+                            <textarea
+                              type="text"
+                              class="form-control"
+                              placeholder="Descripcion..."
+                              formControlName="descripcion"></textarea>
+                          </label>
+                        </div>           
+                        <div class="row">
+                          <label>
+                            <span>Frame canción</span>
+                            <textarea
+                              type="text"
+                              class="form-control"
+                              placeholder="Frame..."
+                              formControlName="frame"></textarea>
+                          </label>
+                        </div>           
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                          <button type="button" (click)="modificarGrupo()" type="button"data-bs-dismiss="modal" class="btn btn-primary">Editar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div><!--Fin modal EDITAR-->
+        </div>
+    </div>
+    <div *ngIf="encontrado"> <!-- LISTADO BUSCADO -->
+      <div *ngIf="grupoEncontrado.length == 0" role="alert"> <!-- ALERT SI NO HAY COINCIDENCIAS -->
+        <div class="alert alert-warning" >
+            No disponemos de esa banda.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col" *ngFor="let grupo of grupoEncontrado"class="card" style="width: 18rem; margin-right: 5%;  margin-bottom: 5%;">
+          <div class="card-body tarjeta">
+            <h5 class="card-title">{{grupo.nombre}}</h5>
+            <p class="card-text">{{grupo.descripcion}}</p>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-success mx-2" [routerLink]="['/info',grupo.nombre]">Ver</button>
+              <button class="btn btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#editarModal"(click)="editar(grupo)">Editar</button>
+              <button (click)="borrar(grupo)" class="btn btn-danger mr-2">Eliminar</button>
+          </div>
+              <!-- MODAL EDITAR -->
+              <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Editar banda</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form (ngSubmit)="modificarGrupo()"[formGroup]="editarGrupo">
+                        <div class="row mb-3">
+                          <label>
+                            <span>Nombre</span>
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Nombre de la banda.."
+                                formControlName="nombre">
+                          </label>
+                        </div>
+                        <div class="row">
+                          <label>
+                            <span>Descripción</span>
+                            <textarea
+                              type="text"
+                              class="form-control"
+                              placeholder="Descripcion..."
+                              formControlName="descripcion"></textarea>
+                          </label> 
+                        </div>
+                        <div class="row">
+                          <label>
+                            <span>Frame canción</span>
+                            <textarea
+                              type="text"
+                              class="form-control"
+                              placeholder="Frame..."
+                              formControlName="frame"></textarea>
+                          </label>
+                        </div>           
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                          <button type="button" (click)="modificarGrupo()" type="button"data-bs-dismiss="modal" class="btn btn-primary">Editar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div><!--Fin modal EDITAR-->
+      </div>
+    </div>
+  </div>    
